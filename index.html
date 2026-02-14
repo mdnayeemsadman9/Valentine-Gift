@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For My Love ❤️</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+    font-family:'Segoe UI','Roboto',sans-serif;
+    background: linear-gradient(135deg,#FFF5F7,#FFE6E6);
+    color:#2d3436;
+    overflow:hidden; /* prevent scroll */
+}
+#container {
+    position: relative;
+    width: 100%;
+    height: 100vh; /* full viewport height */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.section {
+    position: absolute;
+    top: 50%;               /* move to middle vertically */
+    left: 50%;              /* move to middle horizontally */
+    transform: translate(-50%, -50%); /* truly center */
+    width: 90%;
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 15px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+}
+
+
+.section.active {
+    opacity:1;
+    pointer-events:all;
+}
+h1 { font-size:3rem; color:#e63946; margin:10px 0; animation:pulse 2s infinite ease-in-out; }
+h2 { font-size:2rem; color:#d63031; margin:8px 0; }
+button {
+    padding:14px 30px;
+    font-size:1.1rem;
+    border:none;
+    border-radius:50px;
+    background: linear-gradient(45deg,#ff7675,#fd79a8);
+    color:white;
+    cursor:pointer;
+    margin:12px 0;
+    box-shadow:0 4px 15px rgba(255,118,117,0.3);
+    transition:all 0.3s ease;
+}
+button:hover { transform:translateY(-3px); box-shadow:0 6px 20px rgba(255,118,117,0.5); }
+.memory-gallery { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin:8px 0; }
+.memory-gallery img { max-width:300px; max-height:210px; border-radius:15px; box-shadow:0 5px 15px rgba(0,0,0,0.1); transition: transform 0.3s; object-fit:cover; }
+.memory-gallery img:hover { transform:scale(1.03); }
+p { font-size:1.1rem; line-height:1.5; max-width:600px; margin:6px auto; color:#636e72; }
+#game-area { position:relative; width:90%; max-width:700px; height:280px; background: rgba(255,255,255,0.8); border-radius:20px; margin:10px auto; overflow:hidden; box-shadow:0 8px 25px rgba(0,0,0,0.1); }
+.heart { position:absolute; font-size:40px; color:#e84393; cursor:pointer; animation: float 3s infinite ease-in-out; transition: all 0.2s ease; }
+.heart:hover { transform:scale(1.2) rotate(10deg); }
+#score { font-size:1.5rem; font-weight:bold; color:#e17055; }
+.final-message { font-size:1.4rem; max-width:700px; line-height:1.5; color:#2d3436; background: rgba(255,255,255,0.9); padding:1rem 1.2rem; border-radius:15px; box-shadow:0 8px 20px rgba(0,0,0,0.1); margin:6px 0; }
+@keyframes pulse { 0% {transform:scale(1);} 50% {transform:scale(1.05);} 100%{transform:scale(1);} }
+@keyframes float { 0% {transform:translateY(0) rotate(0deg);} 50% {transform:translateY(-12px) rotate(5deg);} 100%{transform:translateY(0) rotate(0deg);} }
+@media(max-width:768px){
+    h1 { font-size:2.2rem; }
+    h2 { font-size:1.6rem; }
+    p { font-size:1rem; }
+    #game-area { height:220px; }
+    .memory-gallery img { max-width:180px; max-height:150px; }
+    .heart { font-size:35px; }
+}
+</style>
+</head>
+<body>
+
+<div id="container">
+
+<!-- WELCOME -->
+<div class="section active" id="welcome">
+    <h1>Hey My Love 🥰</h1>
+    <p>Click the button if you wanna enjoy a beautiful moment with me 💞</p>
+    <button onclick="showMemories()">For You ✨</button>
+</div>
+
+<!-- MEMORIES -->
+<div class="section" id="memories">
+    <h2>💫 Our Special Moments</h2>
+    <div id="memory-content">
+        <div class="memory-gallery">
+            <img src="images/rose.jpeg" alt="Memory 1">
+        </div>
+        <p>The day we first met, do you remember you gave me that rose? 🌹
+I felt such a strange and magical emotion inside 💫💓</p>
+    </div>
+    <button onclick="nextMemory()">Next Memory</button>
+</div>
+
+<!-- AFTER 5TH MEMORY MESSAGE -->
+<div class="section" id="after-memories">
+    <h2>💌 Just One More Thing…</h2>
+    <p>Wow 🥹, these memories with you make my heart skip a beat ❤️💞.  
+    Are you ready for something fun? Tap below to play a game with me! 💖✨</p>
+    <button onclick="showGameStart()">Tap to Play 🎮</button>
+</div>
+
+<!-- HEART GAME -->
+<div class="section" id="game">
+    <h2>❤️ Catch My Heart ❤️</h2>
+    <p>Click hearts until you reach 10 points – you already have my heart 💕</p>
+    <p>Score: <span id="score">0</span></p>
+    <div id="game-area"></div>
+</div>
+
+<!-- FINAL MESSAGE -->
+<div class="section" id="final">
+    <h2>💌 For My Love💌</h2>
+    <p class="final-message" id="message"></p>
+</div>
+
+</div> <!-- container end -->
+
+<script>
+const memories = [
+    { images:["images/rose.jpeg"], text:"The day we first met, do you remember you gave me that rose? 🌹How was that moment when you saw me for the first time? I felt such a strange and magical emotion inside — I can never fully explain it to you 💫💓I was so, so happy that day 💕Do you remember what you told me? 😌You said I look even more beautiful in real life. ❤️✨" },
+    { images:["images/rose2.jpeg","images/rose3.jpeg","images/WhatsApp Image 2026-02-14 at 11.36.24 AM.jpeg"],text:"These are the flowers 🌸 you gave me, do you remember? 🥹 Miss your love ❤️💞." },
+    { images:["images/hand1.jpeg", "images/hand2.jpeg","images/hand3.jpeg"], text:"Do you remember these days? 🥹 Whenever you came, you would hold my hand tightly ✋❤️. And you told me that I shouldn’t let anyone else hold this hand 🤲. I respect your feelings 💖, and from my heart, I wish that you come again and hold my hand tightly 🥰. Please never let go 🙏💞." },
+    { images:["images/ring.jpeg"], text:"This is the first gift I got from you 🎁💖. No matter how much effort you took 💪, you gave it to me 🌹. It’s very valuable to me ✨, and I have kept it carefully 🥰. I always keep it as a memory of you 🫶💞.." },
+    { images:["images/passport.jpeg","images/promised.jpeg","images/promise2.jpeg"], text:"Before you went to China ✈️, you made me promise that I would never let you go 🤝. And I swear, not a single thought of anyone else has ever crossed my mind 💭💖. Almost two long years have passed since we last met 🕰️, yet every heartbeat still whispers your name ❤️.Even now, I feel your hand in mine, the warmth of your touch, the promise we made lingering in my soul 👐.I love you just as deeply, just as madly, as I did on that very first day 💞. I sit here, waiting for you with quiet longing, counting the moments, aching to see you again ⏳💌.When will you come?When will I finally feel your arms around me, and let this wait dissolve into the joy of being with you? " }
+];
+
+let memIndex = 0;
+
+function showMemories(){
+    document.getElementById('welcome').classList.remove('active');
+    document.getElementById('memories').classList.add('active');
+}
+
+function nextMemory(){
+    memIndex++;
+    if(memIndex < memories.length){
+        let galleryHTML = '<div class="memory-gallery">';
+        memories[memIndex].images.forEach(img => galleryHTML += `<img src="${img}" alt="Memory">`);
+        galleryHTML += '</div>';
+        document.getElementById('memory-content').innerHTML = `${galleryHTML}<p>${memories[memIndex].text}</p>`;
+    } else {
+        // After 5th memory → show after-memories page
+        document.getElementById('memories').classList.remove('active');
+        document.getElementById('after-memories').classList.add('active');
+    }
+}
+
+// After-memories → start game
+function showGameStart(){
+    document.getElementById('after-memories').classList.remove('active');
+    startGame();
+}
+
+let score=0, heartInterval;
+
+function startGame(){
+    document.getElementById('game').classList.add('active');
+    createHeart();
+    heartInterval=setInterval(createHeart,1200);
+}
+
+function createHeart(){
+    const area=document.getElementById('game-area');
+    if(area.children.length<7){
+        const heart=document.createElement('div');
+        heart.className='heart';
+        heart.innerText='❤️';
+        heart.style.top=Math.random()*(area.clientHeight-50)+'px';
+        heart.style.left=Math.random()*(area.clientWidth-50)+'px';
+        area.appendChild(heart);
+
+        heart.onclick=function(){
+            score++;
+            document.getElementById('score').innerText=score;
+            heart.style.transform='scale(1.5)';
+            setTimeout(()=>heart.remove(),100);
+            if(score>=10){
+                clearInterval(heartInterval);
+                endGame();
+            }
+        }
+    }
+}
+
+function endGame(){
+    setTimeout(()=>{
+        document.getElementById('game').classList.remove('active');
+        document.getElementById('final').classList.add('active');
+        typeMessage("You’re my favorite adventure, my safest place, and my greatest love. Every day with you is a gift. . I can’t wait to hold your hand, steal your kisses, and get lost in your hugs again ❤️💖. You’re my forever and always, my sweetest dream come true 💞.”I love you So much❤️.Happy valentine day my love");
+    },300);
+}
+
+function typeMessage(text){
+    const elem=document.getElementById('message');
+    elem.innerHTML='';
+    let i=0;
+    function typing(){
+        if(i<text.length){
+            elem.innerHTML+=text[i];
+            i++;
+            setTimeout(typing,40);
+        }
+    }
+    typing();
+}
+</script>
+</body>
+</html>
